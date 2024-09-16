@@ -4,11 +4,11 @@ import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import patientService from "../../services/patients";
 import { Button } from "@mui/material";
-import FemaleIcon from '@mui/icons-material/Female';
-import MaleIcon from '@mui/icons-material/Male';
+import FemaleIcon from "@mui/icons-material/Female";
+import MaleIcon from "@mui/icons-material/Male";
 
 const PatientPage = () => {
-  const [patient, setPatient] = useState<Patient>({});
+  const [patient, setPatient] = useState<Patient | null>(null);
   const { id } = useParams();
   useEffect(() => {
     const fetchSinglePatient = async (id: string) => {
@@ -20,12 +20,10 @@ const PatientPage = () => {
     }
   }, [id]);
 
-  console.log(patient)
-
   return (
     <div>
       <Typography variant="h3" component="h1" sx={{ py: 2 }}>
-        {patient?.name} {patient?.gender === "female" ? <FemaleIcon /> : <MaleIcon />}
+        {patient?.name} {patient?.gender === "female" ? <FemaleIcon fontSize="large" /> : <MaleIcon fontSize="large" />}
       </Typography>
       <Typography variant="h6" component="div" sx={{ py: 1 }}>
         DOB: {patient?.dateOfBirth}
@@ -36,7 +34,27 @@ const PatientPage = () => {
       <Typography variant="h6" component="div" sx={{ py: 1 }}>
         Occupation: {patient?.occupation}
       </Typography>
-      <Button component={Link} to="/" variant="contained" color="primary" sx={{ my: 1 }}>Back</Button>
+      <Typography variant="h4" component="h2" sx={{ py: 2 }}>
+        Entries
+      </Typography>
+      {patient?.entries.map((entry) => {
+        return (
+          <>
+            <Typography variant="h5" component="h3">
+              {entry.date}
+            </Typography>
+            <Typography>{entry.description}</Typography>
+            <ul>
+              {entry.diagnosisCodes?.map((code) => (
+                <li>{code}</li>
+              ))}
+            </ul>
+          </>
+        );
+      })}
+      <Button component={Link} to="/" variant="contained" color="primary" sx={{ my: 1 }}>
+        Back
+      </Button>
     </div>
   );
 };
