@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Patient, Diagnosis } from "../../types";
+import { Patient, Diagnosis, Entry } from "../../types";
 import { Typography } from "@mui/material";
 import { useEffect, useState, useMemo } from "react";
 import patientService from "../../services/patients";
@@ -7,6 +7,7 @@ import diagnosesService from "../../services/diagnoses";
 import { Button } from "@mui/material";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
+import { HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from "./PatientEntries";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -41,6 +42,23 @@ const PatientPage = () => {
     }, {} as Record<string, string>);
   }, [diagnoses]);
 
+  const assertNever = (value: never): never => {
+    throw new Error(`Unhandled discriminated union member: ${JSON.stringify(value)}`);
+  };
+
+  const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+    switch (entry.type) {
+      case "Hospital":
+        return <HospitalEntry entry={entry} />;
+      case "OccupationalHealthcare":
+        return <OccupationalHealthcareEntry entry={entry} />;
+      case "HealthCheck":
+        return <HealthCheckEntry entry={entry} />;
+      default:
+        return assertNever(entry);
+    }
+  };
+
   if (!patient) {
     return (
       <Typography variant="h5" component="h1" sx={{ py: 2 }}>
@@ -69,14 +87,13 @@ const PatientPage = () => {
       {patient?.entries.map((entry) => {
         return (
           <div key={entry.id}>
-            <Typography variant="h5" component="h3">
-              {entry.date}
-            </Typography>
-            <Typography>{entry.description}</Typography>
+            <EntryDetails entry={entry} />
             <ul>
               {entry.diagnosisCodes?.map((code) => (
                 <li key={code}>
-                  <Typography>{code}: {diagnosisLookup[code] || "Unknown diagnosis"}</Typography>
+                  <Typography>
+                    {code}: {diagnosisLookup[code] || "Unknown diagnosis"}
+                  </Typography>
                 </li>
               ))}
             </ul>
