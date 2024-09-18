@@ -25,11 +25,11 @@ const NewEntry = ({ patient, type, onClose }: Props) => {
       date,
       description,
       specialist,
-      healthCheckRating,
+      healthCheckRating: Number(healthCheckRating),
       diagnosisCodes: diagnosisCodesArray,
       type,
     };
-    patientsService.createEntry(newEntry);
+    patientsService.createEntry(newEntry, patient.id);
     onClose();
   };
   return (
