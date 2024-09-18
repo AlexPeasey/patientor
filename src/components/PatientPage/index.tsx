@@ -68,7 +68,7 @@ const PatientPage = () => {
 
   const handleClose = async () => {
     if (id) {
-    await fetchSinglePatient(id);
+      await fetchSinglePatient(id);
     }
     setShowNewEntry(false);
   };
@@ -99,7 +99,7 @@ const PatientPage = () => {
         Entries
       </Typography>
       <Button onClick={handleShowNewEntry}>Add new entry</Button>
-      {showNewEntry && <AddNewEntry patient={patient} onClose={handleClose} />}
+      {showNewEntry && diagnoses && <AddNewEntry patient={patient} diagnoses={diagnoses} onClose={handleClose} />}
       {patient?.entries.map((entry) => {
         return (
           <div key={entry.id}>

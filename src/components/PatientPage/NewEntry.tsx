@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import { Typography, TextField, Box, Button, MenuItem } from "@mui/material";
-import { Patient, Entry, NewEntry } from "../../types";
+import { Patient, Entry, NewEntry, Diagnosis } from "../../types";
 import patientsService from "../../services/patients";
 import axios from "axios";
 
 interface Props {
   patient: Patient;
+  diagnoses: Diagnosis[];
   onClose: () => void;
 }
 
-const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
+const AddNewEntry: React.FC<Props> = ({ patient, diagnoses, onClose }) => {
   const [entryType, setEntryType] = useState<Entry["type"]>("HealthCheck");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
   const [healthCheckRating, setHealthCheckRating] = useState("");
   const [employerName, setEmployerName] = useState("");
   const [sickLeaveStartDate, setSickLeaveStartDate] = useState("");
@@ -26,8 +27,6 @@ const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
   const handleEntrySubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const diagnosisCodesArray = diagnosisCodes.split(" ").filter((code) => code.trim() !== "");
-
       let newEntry: NewEntry;
 
       switch (entryType) {
@@ -37,7 +36,7 @@ const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
             date,
             description,
             specialist,
-            diagnosisCodes: diagnosisCodesArray,
+            diagnosisCodes,
             healthCheckRating: Number(healthCheckRating),
           };
           break;
@@ -47,7 +46,7 @@ const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
             date,
             description,
             specialist,
-            diagnosisCodes: diagnosisCodesArray,
+            diagnosisCodes,
             employerName,
             sickLeave:
               sickLeaveStartDate && sickLeaveEndDate
@@ -61,7 +60,7 @@ const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
             date,
             description,
             specialist,
-            diagnosisCodes: diagnosisCodesArray,
+            diagnosisCodes,
             discharge: {
               date: dischargeDate,
               criteria: dischargeCriteria,
@@ -112,11 +111,23 @@ const AddNewEntry: React.FC<Props> = ({ patient, onClose }) => {
       <TextField fullWidth label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
       <TextField fullWidth label="Specialist" value={specialist} onChange={(e) => setSpecialist(e.target.value)} />
       <TextField
+        label="Diagnosis codes"
         fullWidth
-        label="Diagnosis Codes"
-        value={diagnosisCodes}
-        onChange={(e) => setDiagnosisCodes(e.target.value)}
-      />
+        select
+        SelectProps={{
+          multiple: true,
+          value: diagnosisCodes,
+          onChange: (e) => {
+            setDiagnosisCodes(e.target.value as string[]);
+          },
+        }}
+      >
+        {diagnoses.map((d) => (
+          <MenuItem key={d.code} value={d.code}>
+            {d.code}
+          </MenuItem>
+        ))}
+      </TextField>
 
       {entryType === "HealthCheck" && (
         <TextField
