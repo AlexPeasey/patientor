@@ -1,7 +1,15 @@
 import { Typography, TextField, Box, Button } from "@mui/material";
 import { useState } from "react";
+import { Patient, Entry } from "../../types";
+import patientsService from "../../services/patients";
 
-const NewEntry = () => {
+interface Props {
+  patient: Patient;
+  type: Entry["type"];
+  onClose: () => void;
+}
+
+const NewEntry = ({ patient, type, onClose }: Props) => {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
@@ -10,10 +18,23 @@ const NewEntry = () => {
 
   const handleEntrySubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
+
+    const diagnosisCodesArray = diagnosisCodes.split(" ");
+
+    const newEntry = {
+      date,
+      description,
+      specialist,
+      healthCheckRating,
+      diagnosisCodes: diagnosisCodesArray,
+      type,
+    };
+    patientsService.createEntry(newEntry);
+    onClose();
   };
   return (
     <>
-      <Typography variant="h5">Create new entry</Typography>
+      <Typography variant="h5">Create new entry for {patient.name}</Typography>
       <Box
         component="form"
         sx={{ "& > :not(style)": { m: 1, maxWidth: "36rem" } }}

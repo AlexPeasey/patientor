@@ -59,3 +59,5 @@ export interface HospitalEntry extends BaseEntry {
   };
 }
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
+
+export type EntryFormValues = Omit<Entry, "id">;

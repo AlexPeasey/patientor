@@ -65,6 +65,10 @@ const PatientPage = () => {
     setShowNewEntry(true);
   };
 
+  const handleClose = () => {
+    setShowNewEntry(false);
+  };
+
   if (!patient) {
     return (
       <Typography variant="h5" component="h1" sx={{ py: 2 }}>
@@ -91,7 +95,7 @@ const PatientPage = () => {
         Entries
       </Typography>
       <Button onClick={handleShowNewEntry}>Add new entry</Button>
-      {showNewEntry && <NewEntry />}
+      {showNewEntry && <NewEntry patient={patient} type="HealthCheck" onClose={handleClose} />}
       {patient?.entries.map((entry) => {
         return (
           <div key={entry.id}>
