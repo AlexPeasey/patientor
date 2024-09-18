@@ -8,10 +8,12 @@ import { Button } from "@mui/material";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import { HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from "./PatientEntries";
+import NewEntry from "./NewEntry";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
+  const [showNewEntry, setShowNewEntry] = useState(false);
   const { id } = useParams();
   // Fetch patient data
   useEffect(() => {
@@ -59,6 +61,10 @@ const PatientPage = () => {
     }
   };
 
+  const handleShowNewEntry = () => {
+    setShowNewEntry(true);
+  };
+
   if (!patient) {
     return (
       <Typography variant="h5" component="h1" sx={{ py: 2 }}>
@@ -84,6 +90,8 @@ const PatientPage = () => {
       <Typography variant="h4" component="h2" sx={{ py: 2 }}>
         Entries
       </Typography>
+      <Button onClick={handleShowNewEntry}>Add new entry</Button>
+      {showNewEntry && <NewEntry />}
       {patient?.entries.map((entry) => {
         return (
           <div key={entry.id}>
