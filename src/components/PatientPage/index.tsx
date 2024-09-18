@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import { HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from "./PatientEntries";
-import NewEntry from "./NewEntry";
+import AddNewEntry from "./NewEntry";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -99,7 +99,7 @@ const PatientPage = () => {
         Entries
       </Typography>
       <Button onClick={handleShowNewEntry}>Add new entry</Button>
-      {showNewEntry && <NewEntry patient={patient} type="HealthCheck" onClose={handleClose} />}
+      {showNewEntry && <AddNewEntry patient={patient} onClose={handleClose} />}
       {patient?.entries.map((entry) => {
         return (
           <div key={entry.id}>
