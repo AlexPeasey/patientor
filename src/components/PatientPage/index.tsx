@@ -15,13 +15,14 @@ const PatientPage = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
   const [showNewEntry, setShowNewEntry] = useState(false);
   const { id } = useParams();
+
+  const fetchSinglePatient = async (id: string) => {
+    const patient = await patientService.getPatient(id);
+    setPatient(patient);
+  };
+
   // Fetch patient data
   useEffect(() => {
-    const fetchSinglePatient = async (id: string) => {
-      const patient = await patientService.getPatient(id);
-      setPatient(patient);
-    };
-
     if (id) {
       void fetchSinglePatient(id);
     }
@@ -65,7 +66,10 @@ const PatientPage = () => {
     setShowNewEntry(true);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    if (id) {
+    await fetchSinglePatient(id);
+    }
     setShowNewEntry(false);
   };
 

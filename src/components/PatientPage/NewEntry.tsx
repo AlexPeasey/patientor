@@ -2,6 +2,7 @@ import { Typography, TextField, Box, Button } from "@mui/material";
 import { useState } from "react";
 import { Patient, Entry } from "../../types";
 import patientsService from "../../services/patients";
+import axios from "axios";
 
 interface Props {
   patient: Patient;
@@ -15,26 +16,43 @@ const NewEntry = ({ patient, type, onClose }: Props) => {
   const [specialist, setSpecialist] = useState("");
   const [healthCheckRating, setHealthCheckRating] = useState("");
   const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleEntrySubmit = (event: React.SyntheticEvent) => {
+  const handleEntrySubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
 
-    const diagnosisCodesArray = diagnosisCodes.split(" ");
+    try {
+      const diagnosisCodesArray = diagnosisCodes.split(" ");
 
-    const newEntry = {
-      date,
-      description,
-      specialist,
-      healthCheckRating: Number(healthCheckRating),
-      diagnosisCodes: diagnosisCodesArray,
-      type,
-    };
-    patientsService.createEntry(newEntry, patient.id);
-    onClose();
+      const newEntry = {
+        date,
+        description,
+        specialist,
+        healthCheckRating: Number(healthCheckRating),
+        diagnosisCodes: diagnosisCodesArray,
+        type,
+      };
+
+      await patientsService.createEntry(newEntry, patient.id);
+
+      onClose();
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          setErrorMessage(error.response.data || "An error occurred");
+        }
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    }
   };
   return (
     <>
       <Typography variant="h5">Create new entry for {patient.name}</Typography>
+      {errorMessage ? <Typography color="red">Error: {errorMessage}</Typography> : null}
       <Box
         component="form"
         sx={{ "& > :not(style)": { m: 1, maxWidth: "36rem" } }}
